@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}
+Main Page
+{% endblock %}
+{% block body %}
+
+<div class="container">
+    <h1>Main Page</h1>
+    <p>
+        This is the main page.
+        Hi {{ current_user.username }}
+    </p>
+    <a class="btn btn-outline-success" href="{{ url_for('admission') }}">Submit Admission</a>
+    <a class="btn btn-outline-success" href="{{ url_for('all_admissions') }}">Admissions</a>
+</div>
+{% endblock %}

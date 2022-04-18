@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block head %}
+<style>
+    #footer {
+        position: unset;
+        padding: 10px 10px 0px 10px;
+        bottom: 0;
+        width: 100%;
+        height: 40px;
+        background: grey;
+    }
+</style>
+{% endblock %}
+{% block title %}
+All Admissions
+{% endblock %}
+{% block body %}
+<div class="container">
+    <table class="table">
+        <head>
+            {% for a_col in data["admission_cols"] %}
+            <tr>
+                <th>{{ a_col }}</th>
+                {% if (data['ads'][a_col]|string).startswith("uploads") %}
+                <th><a class="btn btn-outline-info" href="{{ url_for('send_from_pth', path=data['ads'][a_col]) }}">file</a>  </th>
+                {% else %}
+                <th>{{ data['ads'][a_col] }}</th>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </head>
+        <tbody>
+            <tr>
+                
+            </tr>
+        </tbody>
+    </table>
+    <div class="d-flex" style='justify-content: space-between; margin-bottom: 3rem;'>
+        <form action="{{url_for('accept_admission')}}" method="post">
+            <input type="hidden" name="admission_id" value="{{data['ads']['id']}}">
+            <button class="btn btn-success" type="submit">Accept</button>
+        </form>
+        <form action="{{url_for('reject_admission')}}" method="post">
+            <input type="hidden" name="admission_id" value="{{data['ads']['id']}}">
+            <button class="btn btn-danger" type="submit">Reject</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

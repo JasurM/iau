@@ -1,0 +1,875 @@
+{% extends 'base.html' %}
+{% block title %}
+Submit Application
+{% endblock %}
+{% block body %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row cont">
+            <div class="col-md-3">
+                <!-- Circles which indicates the steps of the form: -->
+                <div class='sidebar-left'>
+                    
+                    <span class="step {% if step == 0 %} active {% endif %}">Application Instructions</span>
+                    <span class="step">App for Admission</span>
+                    <span class="step {% if step == 1 %} active {% endif %}">Personal Details</span>
+                    <span class="step {% if step == 2 %} active {% endif %}">Academic Information </span>
+                    <span class="step {% if step == 3 %} active {% endif %}">Passport Information</span>
+                    <span class="step {% if step == 4 %} active {% endif %}">Addresses</span>
+                    <span class="step {% if step == 5 %} active {% endif %}">Education and Qualifications</span>
+                    <span class="step {% if step == 6 %} active {% endif %}">English Language</span>
+                    <span class="step {% if step == 7 %} active {% endif %}">Supporting Information</span>
+                    <span class="step {% if step == 8 %} active {% endif %}">References</span>
+                    <span class="step {% if step == 9 %} active {% endif %}">Terms and Conditions</span>
+                    <span class="newStep">Important Links</span>
+                    <span class="newStep1">Check Your Application</span>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <form id="regForm" method='POST' enctype='multipart/form-data'>
+                    <!--Application Instructions-->
+                    {% if step == 0 %}
+                    <div class="form-group protab" style="display: block;">
+                        <h4 class="newTitle">Application for Admission</h4>
+                        <p> &nbsp;&nbsp;&nbsp;&nbsp;As you proceed through the application form, each section will provide you with information
+                            about how to answer the questions within the section, where necessary. Please read the
+                            information in each section carefully to ensure you answer all questions appropriately. You
+                            can also use the details provided in these instructions to help you.<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;We ask that you complete the application form in full. Throughout the application form,
+                            questions that are mandatory are marked with a red asterisk. You will be unable to submit
+                            your application until all mandatory fields are completed.<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;You can use the ‘Check Your Application’ link on the left menu of the application at any
+                            time whilst completing the application to see which questions remain unanswered and must be
+                            completed.
+                        </p>
+                    </div>
+                    {% endif %}
+                    <!--Personal Details-->
+                    {% if step == 1 %}
+                    <div class="form-group protab" style="display: block;">
+                        <h4 class="newTitle">Personal Details </h4>
+                        <div class="col-lg-6">
+                            <label>Title *</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <select class="form-control" placeholder="Select One" name="title"
+                                 required="">
+                                <option value="titleFirst" {% if data['title'] == "titleFirst" %} selected {% endif %}>First Title</option>
+                                <option value="titleSecond" {% if data['title'] == "titleSecond" %} selected {% endif %}>Second Title</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>First/Given Name *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input placeholder="First name" class="form-control" 
+                                name="firstname" {% if data['firstname'] != None %} value="{{data['firstname']}}"{% endif %}>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Surname/Family Name *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input placeholder="Surname" class="form-control" 
+                                name="surname" {% if data['surname'] != None %} value="{{data['surname']}}"{% endif %}>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Middle Name</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input placeholder="Middle Name" class="form-control" 
+                                name="middlename" {% if data['middlename'] != None %} value="{{data['middlename']}}"{% endif %}>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Date of Birth *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="DoB" value='{{data["DoB"]}}' required="" type="date" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Gender *</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <select class="form-control" name="gender" required="">
+                                <option value="Male" {% if data['gender'] == 'Male' %} selected {% endif %}>Male</option>
+                                <option value="Female" {% if data['gender'] == 'Female' %} selected {% endif %}>Female</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Country of Birth *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <select class="form-control" name="CoB" required="">
+                                <option value="uzbekistan" {% if data['CoB'] == 'uzbekistan' %} selected {% endif %}>Uzbekistan</option>
+                                <option value="rossia" {% if data['CoB'] == 'rossia' %} selected {% endif %}>Rossia</option>
+                                <option value="usa" {% if data['CoB'] == 'usa' %} selected {% endif %}>Usa</option>
+                                <option value="xitoy" {% if data['CoB'] == 'xitoy' %} selected {% endif %}>Xitoy</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Nationality:</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="nationality" {% if data['nationality'] != None %} value='{{data["nationality"]}}'{% endif %} required="" type="text" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Country of Permanent residence *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class=" mobile-flex">
+                                <select class="form-control" name="perma_residence" required="">
+                                    <option value="uzbekistan" {% if data['perma_residence'] == 'uzbekistan' %} selected {% endif %}>Uzbekistan</option>
+                                    <option value="rossia" {% if data['perma_residence'] == 'rossia' %} selected {% endif %}>Rossia</option>
+                                    <option value="usa" {% if data['perma_residence'] == 'usa' %} selected {% endif %}>Usa</option>
+                                    <option value="xitoy" {% if data['perma_residence'] == 'xitoy' %} selected {% endif %}>Xitoy</option>
+                                </select>
+                                <p class="dfn-hover"><dfn data-info="The country where you are able to reside indefinitely with no restrictions on your stay
+                                            "><img
+                                            src="http://test.bestmark.uz/wp-content/uploads/2022/04/information-1.png"
+                                            alt="" width="32px" /></dfn></p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Current Country of Residence
+                                *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group mobile-flex"><select class="form-control" name="curr_residence"
+                                    required="">
+                                    <option value="uzbekistan" {% if data['curr_residence'] == 'uzbekistan' %} selected {% endif %}>Uzbekistan</option>
+                                    <option value="rossia" {% if data['curr_residence'] == 'rossia' %} selected {% endif %}>Rossia</option>
+                                    <option value="usa" {% if data['curr_residence'] == 'usa' %} selected {% endif %}>Usa</option>
+                                    <option value="xitoy" {% if data['curr_residence'] == 'xitoy' %} selected {% endif %}>Xitoy</option>
+                                </select>
+                                <p class="dfn-hover"><dfn data-info="The country where you are currently living"><img
+                                            src="http://test.bestmark.uz/wp-content/uploads/2022/04/information-1.png"
+                                            alt="" width="32px" /></dfn></p>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <p>A student’s disability will not be a factor in their selection. Telling us you
+                                have a disability or health need will not affect the University’s decision
+                                whether or not to offer you a place, and the information will remain strictly
+                                confidential. It is important that the University knows of any disability for
+                                the purposes of monitoring equal opportunities and to ensure that the university
+                                can provide students with appropriate facilities.</p>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Disability *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group"><select class="form-control" name="disability" required="">
+                                    <option value="uzbekistan" {% if data['disability'] == 'uzbekistan' %} selected {% endif %}>Uzbekistan</option>
+                                    <option value="rossia" {% if data['disability'] == 'rossia' %} selected {% endif %}>Rossia</option>
+                                    <option value="usa" {% if data['disability'] == 'usa' %} selected {% endif %}>Usa</option>
+                                    <option value="xitoy" {% if data['disability'] == 'xitoy' %} selected {% endif %}>Xitoy</option>
+                                </select></div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <!--Academic Information-->
+                    {% if step == 2 %}
+                    <div class="form-group protab" style="display: block;">
+                        <h4 class="newTitle">Academic information </h4>
+                        <div class="col-lg-6 ">
+                            <label>Admission Term *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mobile-flex">
+                                <select name="term" class="form-control" placeholder="2022-2023 years" value="{{data['term']}}"
+                                    required>
+                                    <option value="firstYear" {% if data['term'] == 'firstYear' %} selected {% endif %}> 2022-2023 years</option>
+                                    <option value="secondYear" {% if data['term'] == "secondYear" %} selected {% endif %}> 2023-2024 years</option>
+                                </select>
+                                <p class="dfn-hover"><dfn data-info="The country where you are currently living"><img
+                                            src="http://test.bestmark.uz/wp-content/uploads/2022/04/information-1.png"
+                                            width="32px" alt=""></dfn></p>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Application Type *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mobile-flex">
+                                <select name="type" placeholder="Please select" class="form-control" value="{{data['type']}}"
+                                    required>
+                                    <option value="uzbekistan" {% if data['type'] == 'uzbekistan' %} selected {% endif %}>Uzbekistan</option>
+                                </select>
+                                <p class="dfn-hover"><dfn data-info="The country where you are currently living"><img
+                                            src="http://test.bestmark.uz/wp-content/uploads/2022/04/information-1.png"
+                                            width="32px" alt=""></dfn></p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Programme of Study *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mobile-flex">
+                                <select name="programme" placeholder="Uzbekistan" class="form-control" value="{{data['programme']}}"
+                                    required>
+                                    <option value="uzbekistan" {% if data['programme'] == 'uzbekistan' %} selected {% endif %}>Uzbekistan</option>
+
+                                </select>
+                                <p class="dfn-hover"><dfn data-info="The country where you are currently living"><img
+                                            src="http://test.bestmark.uz/wp-content/uploads/2022/04/information-1.png"
+                                            width="32px" alt=""></dfn></p>
+                            </div>
+
+                        </div>
+                    </div>
+                    {% endif %}
+                    <!--Passport Information-->
+                    {% if step == 3 %}
+                    <div class="form-group protab" style="display: block;">
+                        <h4 class="newTitle">Passport Information </h4>
+                        <div class="col-lg-6 ">
+                            <label>Passport Number *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="passport" required="" type="text" {% if data['passport'] != None %} value="{{data['passport']}}"{% endif %} />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Passport Expiry Date *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="expiry_date" required="" type="date" value="{{data['expiry_date']}}" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Passport Country of Issue *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mobile-flex">
+                                <select name="ProgrammeStudy" placeholder="Uzbekistan" class="form-control" value="{{data['issue_country']}}}"
+                                    required>
+                                    <option value="uzbekistan" {% if data['issue_country'] %} selected {% endif %} >Uzbekistan</option>
+
+                                </select>
+                                <p class="dfn-hover"><dfn data-info="The country where you are currently living"><img
+                                            src="http://test.bestmark.uz/wp-content/uploads/2022/04/information-1.png"
+                                            width="32px" alt=""></dfn></p>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Please upload a copy of your current valid passport *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="drop-zone">
+                                <span class="drop-zone__prompt">Drop your file here to upload or select from storage </span>
+                                <input type="file"  name="passport_copy" class="drop-zone__input">
+                            </div>
+                            {% if data['passport_copy'] %}
+                                <a href="{{ url_for('send_from_pth', path=data['passport_copy']) }}" class="attachment-box">Your Previous File</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <!--Addresses-->
+                    {% if step == 4 %}
+                    <div class="form-group protab" style="display: block;">
+                        <h4 class="newTitle">Addresses </h4>
+                        <h4 style="text-align: center;">Permanent Address</h4>
+                        <p>Please provide your contact details below. If any of the information you enter below changes
+                            during the admissions process you should contact the Admissions team for your record to be
+                            updated.</p>
+                        <div class="col-lg-6">
+                            <label>Address Line 1 *</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input class="form-control" name="corr_address_1" required="" type="text" {% if data['corr_address_1'] != None %} value="{{data['corr_address_1']}}"{% endif %}/>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="profile_details_text">Address Line 2 </label>
+                        </div>
+                        <div class="col-md-6">
+                            <input class="form-control" name="corr_address_2" type="text" {% if data['corr_address_2'] != None %} value="{{data['corr_address_2']}}"{% endif %} />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>City *</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="form-control" name="corr_city" required="" type="text" {% if data['corr_city'] != None %} value="{{data['corr_city']}}"{% endif %} />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>County</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="form-control" name="corr_county" required="" type="text" {% if data['corr_county'] != None %} value="{{data['corr_county']}}"{% endif %} />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Zip/Postal Code</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <input class="form-control" name="corr_zip" required="" type="number" {% if data['corr_zip'] != None %} value="{{data['corr_zip']}}"{% endif %} />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Country *</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <select class="form-control" placeholder="Qibray" name="corr_country" required="">
+                                <option value="Qibray" {% if data['corr_country'] %} selected {% endif %} >Qibray</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <p>Please include details of the address where you live permanently. If you have
+                                another address which is temporary (eg a student residence), please enter this
+                                in the Correspondence Address section below.</p>
+                        </div>
+                        <div class="col-lg-12">
+                            <h4 style="text-align: center;">Permanent Address</h4>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>
+                                Is your correspondence address the same as your permanent address? *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div style="display: flex;">
+                                <p style="margin-right: 10px;">
+                                    <input type="radio" name="perma_corr" value="yes" {% if data['perma_corr'] %} checked {% endif %}>Yes</input>
+                                </p>
+                                <p>
+                                    <input type="radio" name="perma_corr" value="no" {% if not data['perma_corr'] %} checked {% endif %}>No</input>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Address Line 1 *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="perma_address_1" type="text" required="" {% if data['perma_address_1'] != None %} value="{{data['perma_address_1']}}"{% endif %} />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Address Line 2 *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="perma_address_2" type="text" required="" {% if data['perma_address_2'] != None %} value="{{data['perma_address_2']}}"{% endif %} />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>City *</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="form-control" name="perma_city" required="" type="text" {% if data['perma_city'] != None %} value="{{data['perma_city']}}"{% endif %} />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>County</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="form-control" name="perma_county" required="" type="text" {% if data['perma_county'] != None %} value="{{data['perma_county']}}"{% endif %} />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Zip/Postal Code</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <input class="form-control" name="perma_zip" required="" type="number" {% if data['perma_zip'] != None %} value="{{data['perma_zip']}}"{% endif %} />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Country *</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <select class="form-control" placeholder="Qibray" name="perma_country" required="">
+                                <option value="Qibray" {% if data['perma_country'] %} selected {% endif %} >Qibray</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-12">
+                            <p>Most of our correspondence will be by email but if we send you anything by post, we
+                                will use the address that you give us in this section. If your Correspondence
+                                Address is temporary, please give us the date of when you moved in and when you
+                                expect to leave. This will help us to make sure that we always send correspondence
+                                to the correct address.</p>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Date when you moved/will move in to this
+                                address</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <input class="form-control" name="perma_moved_from" required="" type="date" value="{{ data['perma_moved_from'] }}" />
+                        </div>
+                        <div class="col-lg-3">
+                            <input class="form-control" name="perma_moved_to" required="" type="date" value="{{data['perma_moved_to']}}" />
+                        </div>
+                        <div class="col-lg-12">
+                            <h4>Telephone Number</h4>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Applicant's personal contact number * </label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="contact_number" required="" type="tel" {% if data['contact_number'] != None %} value="{{data['contact_number']}}"{% endif %} />
+                        </div>
+                        <div class="col-lg-12">
+                            <p>Please note that the University may need to contact you by telephone regarding your
+                                application, therefore you should provide at least one telephone number that we can
+                                use to contact you at any time during the application process.
+                            </p>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Applicant's personal email address </label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="email" required="" type="email" {% if data['email'] != None %} value="{{data['email']}}"{% endif %} />
+                        </div>
+                    </div>
+                    {% endif %}
+                    <!--Education and Qualifications-->
+                    {% if step == 5 %}
+                    <div class="form-group protab" style="display: block;">
+                        <h4 class="newTitle">Education and Qualifications</h4>
+                        <div class="col-lg-6">
+                            <label>School/College *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="school" required="" type="text" {% if data['school'] != None %} value="{{data['school']}}"{% endif %} />
+                        </div>
+                        <div class="col-lg-6 ">
+                            <label>Qualification Obtained/To Be Obtained *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mobile-flex">
+                                <select name="majorFirst" class="form-control" placeholder="Other qualifications"
+                                    value="{{data['qualified_date']}}" required>
+                                    <option value="qualifications1" {% if data['qualified_date'] == 'qualifications1' %} selected {% endif %}>2022-2023 years</option>
+                                    <option value="qualifications2" {% if data['qualified_date'] == 'qualifications2' %} selected {% endif %}>2023-2024 years</option>
+                                </select>
+                                <p class="dfn-hover"><dfn data-info="The country where you are currently living"><img
+                                            src="http://test.bestmark.uz/wp-content/uploads/2022/04/information-1.png"
+                                            width="32px" alt=""></dfn></p>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-6">
+                            <label>If you have selected 'Other Qualification' from the
+                                list above, please indicate the type of qualification here</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="qualified_type" required="" type="text" {% if data['qualified_type'] != None %} value="{{data['qualified_type']}}"{% endif %} />
+                        </div>
+                        <div class="col-md-12" style="padding: 0;">
+                            <div class="col-lg-6">
+                                <label>Subject major *</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mobile-flex">
+                                    <select name="major" class="form-control" placeholder="Other qualifications"
+                                        value="" required>
+                                        <option value="qualifications3" {% if data['major'] == 'qualifications3' %} selected {% endif %}>2022-2023 years</option>
+                                        <option value="qualifications4" {% if data['major'] == 'qualifications4' %} selected {% endif %}>2023-2024 years</option>
+                                    </select>
+                                    <p class="dfn-hover"><dfn data-info="The country where you are currently living"><img
+                                                src="http://test.bestmark.uz/wp-content/uploads/2022/04/information-1.png"
+                                                width="32px" alt=""></dfn></p>
+                                </div>
+    
+                            </div>
+                        </div>
+                        <div class="col-md-12" style="padding: 0;">
+                            <div class="col-lg-6 ">
+                                <label>If you have selected 'Other subject not listed
+                                    here', please specify the subject you studied.</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input class="form-control" name="major_type" required="" type="text" {% if data['major_type'] != None %} value="{{data['major_type']}}"{% endif %} />
+                            </div>
+                        </div>
+                        <div class="col-md-12" style="padding: 0;">
+                            <div class="col-lg-6">
+                                <label>Start Date * (Please ensure that start date is
+                                    earlier than completion date)</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input class="form-control" name="start_date" required="" type="date" value="{{data['start_date']}}" />
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Completion Date *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="completion_date" required="" type="date" value="{{data['completion_date']}}" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Degree classification/ percentage/ GPA/ Grade
+                                (obtained or achieved to date) *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="transcript_date" required="" type="text" value="{{data['transcript_date']}}" />
+                        </div>
+                       <div class="col-md-12 " style="padding: 0;">
+                        <div class="col-lg-6">
+                            <label>Do you hold any other qualifications equivalent to a
+                                UK first degree or above?</label>
+                        </div>
+                        
+                        <div class="col-lg-6">
+                            <div style="display: flex;">
+                                <p style="margin-right: 10px;">
+                                    <input type="radio" name="other_qualifications" {% if data['other_qualifications'] %} checked {% endif %} value="yes">Yes</input>
+                                </p>
+                                <p>
+                                    <input type="radio" name="other_qualifications" {% if not data['other_qualifications'] %} checked {% endif %} value="no">No</input>
+                                </p>
+                            </div>
+                        </div>
+                       </div>
+                        <div class="col-md-12" style="padding: 0;">
+                            <div class="col-lg-6">
+                                <label>Please upload a copy of your academic Transcript to
+                                    evidence the qualifications listed above. Please note that you may upload only ONE
+                                    file here. </label>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="drop-zone">
+                                    <span class="drop-zone__prompt">Drop your file here to upload or select from storage </span>
+                                    <input type="file" name="transcript_copy" class="drop-zone__input" value="{{data['transcript_copy']}}">
+                                </div>
+                                {% if data['transcript_copy'] %}
+                                    <a href="{{ url_for('send_from_pth', path=data['transcript_copy']) }}" class="attachment-box">Your Previous File</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>If you have already graduated, please upload a copy
+                                of your Degree Certificate. Please note that you may upload only ONE file
+                                here.</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="drop-zone">
+                                <span class="drop-zone__prompt">Drop your file here to upload or select from storage </span>
+                                <input type="file" name="degree_cerf_copy" class="drop-zone__input" value="{{data['degree_cerf_copy']}}">
+                            </div>
+                            {% if data['degree_cerf_copy'] %}
+                                <a href="{{ url_for('send_from_pth', path=data['degree_cerf_copy']) }}" class="attachment-box">Your Previous File</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <!--English language-->
+                    {% if step == 6 %}
+                    <div class="form-group protab" style="display: block;">
+                        <h4 class="newTitle">English Language</h4>
+                        <h4 style="text-align: center;">Qualification</h4>
+                        <p>All students are required to have a thorough command of the English language. The section
+                            below, in
+                            addition to information regarding your nationality, country of residence, and academic
+                            history will
+                            allow the university to identify if you require an English Language qualification to study
+                            in the
+                            UK.</p>
+                        <div class="col-lg-6">
+                            <label>Is English your first language? *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div style="display: flex;">
+                                <p style="margin-right: 10px;">
+                                    <input type="radio" name="is_english_first_language" {% if data['is_english_first_language'] %} checked {% endif %} value="yes">Yes</input>
+                                </p>
+                                <p>
+                                    <input type="radio" name="is_english_first_language" {% if not data['is_english_first_language'] %} checked {% endif %} value="no">No</input>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Have you completed an academic qualification
+                                equivalent to a UK degree which was taught in a country which is defined by UK Visas
+                                and Immigration as a majority English-speaking country? *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div style="display: flex; margin-top: 40px;">
+                                <p style="margin-right: 10px;">
+                                    <input type="radio" name="UK_qualification_equivalent" {% if data['UK_qualification_equivalent'] %} checked {% endif %} value="yes" checked>Yes</input>
+                                </p>
+                                <p>
+                                    <input type="radio" name="UK_qualification_equivalent" {% if not data['UK_qualification_equivalent'] %} checked {% endif %} value="no">No</input>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>If yes please select your country</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <select name="uqe_country" class="form-control" placeholder="Select one" value="{{data['uqe_country']}}" required>
+                                <option value="qualifications1" {% if data['uqe_country'] == '' %} selected {% endif %} >2022-2023 years</option>
+                                <option value="qualifications2" {% if data['uqe_country'] == '' %} selected {% endif %}>2023-2024 years</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-12">
+                            <h4 style="text-align: center;">English Language Test</h4>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Do you hold an English Language Test? * </label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div style="display: flex;">
+                                <p style="margin-right: 10px;">
+                                    <input type="radio" name="ELT" {% if data['ELT'] %} checked {% endif %} value="yes">Yes</input>
+                                </p>
+                                <p>
+                                    <input type="radio" name="ELT" {% if not data['ELT'] %} checked {% endif %} value="no">No</input>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>If Yes, please select from following list of tests
+                                *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <select name="ELT_type" class="form-control" placeholder="Select one" value="{{data['ELT_type']}}" required>
+                                <option value="qualifications1" {% if data['ELT_type'] == 'qualifications1' %} checked {% endif %}>2022-2023 years</option>
+                                <option value="qualifications2" {% if data['ELT_type'] == 'qualifications2' %} checked {% endif %}>2023-2024 years</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Date test taken *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="ELT_date" required="" type="date" value="{{data['ELT_date']}}" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Overall Score *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="overall_score" required="" type="text" value="{{data['overall_score']}}" />
+                        </div>
+                        <div class="col-lg-6 ">
+                            <label>Listening Score *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="listening_score" required="" type="text" value="{{data['listening_score']}}" />
+                        </div>
+                        <div class="col-lg-6 ">
+                            <label>Reading Score *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="reading_score" required="" type="text" value="{{data['reading_score']}}" />
+                        </div>
+                        <div class="col-lg-6 ">
+                            <label>Writing Score *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input type="text" name="writing_score"class='form-control' required value="{{data['writing_score']}}">
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Speaking Score *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input type="text" name="speaking_score"class='form-control' required value="{{data['speaking_score']}}">
+                        </div>
+                        <div class="col-md-12" style="padding: 0;">
+                            <div class="col-lg-6">
+                                <label>If you do not hold a English Language test, but hold
+                                    one of the following qualifications, please select it from the list *</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <select name="ELT_alternative" class="form-control" placeholder="Select one" value=""
+                                    required>
+                                    <option value="qualifications1" {% if data['ELT_alternative'] == '' %} selected {% endif %}>2022-2023 years</option>
+                                    <option value="qualifications2" {% if data['ELT_alternative'] == '' %} selected {% endif %}>2023-2024 years</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 ">
+                            <label>Date test taken *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="alternative_date" required="" type="date" value="{{data['alternative_date']}}" />
+                        </div>
+                        <div class="col-lg-6 ">
+                            <label>Grade or score achieved *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="form-control" name="alternative_grade" required="" type="text" {% if data['alternative_grade'] != None %} value="{{data['alternative_grade']}}"{% endif %} />
+                        </div>
+                    </div>
+                    {% endif %}
+                     <!--Supporting Information-->
+                    {% if step == 7 %}
+                    <div class="form-group protab" style="display: block;">
+                        <h4 class="newTitle">Supporting Information</h4>
+                        <h4 style="text-align: center">Supporting Statement </h4>
+                        <div class="row">
+
+                        
+                        <div class="col-lg-6 ">
+                            <label>Please upload a copy of your Personal Statement. The personal statement should
+                                include: your interest and experience in this subject area; your reasons for choosing
+                                this particular programme; your future aim or career plan; how the programme of study
+                                enables you to achieve this and how the programme connects to your future plans.</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="drop-zone">
+                                <span class="drop-zone__prompt">Drop your file here to upload or select from storage </span>
+                                <input type="file" name="personal_statement" class="drop-zone__input" value='{{data["personal_statement"]}}'>
+                            </div>
+                            {% if data['personal_statement'] %}
+                                <a href="{{ url_for('send_from_pth', path=data['personal_statement']) }}" class="attachment-box">Your Previous File</a>
+                            {% endif %}
+                        </div>
+                        </div>
+                        <div class="row">
+                        <div class="col-lg-6">
+                            <label>If you wish to undertake a research degree (PhD, MPhil, MRes, etc) please upload your
+                                Research Proposal. The Research Proposal should include a brief outline of the subject
+                                area in which you would like to undertake research, or give details of a specific
+                                project, and should also include the name(s) of your proposed supervisor(s). If you are
+                                applying for an advertised studentship, you should also specify this.</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="drop-zone">
+                                <span class="drop-zone__prompt">Drop your file here to upload or select from storage </span>
+                                <input type="file" name="research_proposal" class="drop-zone__input" value='{{data["research_proposal"]}}'>
+                            </div>
+                            {% if data['research_proposal'] %}
+                                <a href="{{ url_for('send_from_pth', path=data['research_proposal']) }}" class="attachment-box">Your Previous File</a>
+                            {% endif %}
+                        </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                     <!--Terms and Conditions-->
+                    {% if step == 8 %}
+                    <div class="form-group protab" style="display: block;">
+                        <h4 class="newTitle">References </h4>
+                        <h4 style="text-align: center;">References</h4>
+                        <p>As part of the admissions criteria we require two references. These should be academic
+                            references if you have
+                            been in full-time education at any point within the last three years. References should be
+                            signed and with
+                            appropriate letter heading.</p>
+                        <div class="col-lg-6">
+                            <label>Please upload a copy of the first reference for this
+                                applicant.
+                            </label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="drop-zone">
+                                <span class="drop-zone__prompt">Drop your file here to upload or select from storage </span>
+                                <input type="file" name="first_reference" class="drop-zone__input" value="{{data['first_reference']}}">
+                            </div>
+                            {% if data['first_reference'] %}
+                                <a href="{{ url_for('send_from_pth', path=data['first_reference']) }}" class="attachment-box">Your Previous File</a>
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Please upload a copy of the second reference for this applicant.
+                            </label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="drop-zone">
+                                <span class="drop-zone__prompt">Drop your file here to upload or select from storage </span>
+                                <input type="file" name="second_reference" class="drop-zone__input" value="{{data['second_reference']}}">
+                            </div>
+                            {% if data['second_reference'] %}
+                                <a href="{{ url_for('send_from_pth', path=data['second_reference']) }}" class="attachment-box">Your Previous File</a>
+                            {% endif %}
+                        </div>
+                        <p>If you do not have references to include with your application then your application form can
+                            be submitted without them, but you may be asked for references if an offer is made. If
+                            references are required, this will be included as a condition of an offer.</p>
+                    </div>
+                    {% endif %}
+                    {% if step == 9 %}
+                    <div class="form-group protab" style="display: block;">
+                        <h4 class="newTitle">Terms and Conditions</h4>
+                        <p>&nbsp; &nbsp; &nbsp; Accordingly, apply yourself is not responsible or liable, directly or
+                            indirectly, for any damage or loss caused or alleged to be caused by or in connection with,
+                            use or reliance on any user or other content, goods, courses or services available on or
+                            through any other site.</p>
+                        <p>&nbsp; &nbsp; &nbsp;Apply Yourself provides online application services for educational and
+                            other institutions. Your use of this service, or any other Apply Yourself services, is
+                            subject to the terms and conditions contained herein. By accessing or using this online
+                            application, you agree to be bound by these terms and conditions. Apply Yourself may revise
+                            these terms and conditions at any time, and any revisions shall be binding upon you and your
+                            future access to the online application. You should therefore visit this posting to review
+                            the terms and conditions from time to time as you access or use the online application. If
+                            you believe your PIN and/or password have been compromised or your account has experienced
+                            unauthorized access, it is your responsibility to notify Apply Yourself as soon as possible
+                            at (link for support service)</p>
+                        <div class="col-lg-6">
+                            <label> I confirm that I have read and accept the IAU’s Terms of use *</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <div style="display: flex;">
+                                <p style="margin-right: 10px;">
+                                    <input name="agree_terms" {% if data['agree_terms'] %} checked {% endif %} type="checkbox">Yes</p>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if step == 10 %}
+                    <div class="container">
+                        <table class="table">
+                            <head>
+                                {% for a_col in data["admission_cols"] %}
+                                <tr>
+                                    <th>{{ a_col }}</th>
+                                    {% if (data['ads'][a_col]|string).startswith("uploads") %}
+                                    <th><a class="btn btn-outline-info" href="{{ url_for('send_from_pth', path=data['ads'][a_col]) }}">file</a>  </th>
+                                    {% else %}
+                                    <th>{{ data['ads'][a_col] }}</th>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </head>
+                            <tbody>
+                                <tr>
+                                    
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    <div class="col-md-12">
+                        <div style="overflow:auto;">
+                            <div style="float:right;">
+                            {% if step > 0 %}
+                            <a type="button" class="but" id="prevBtn">Previous</a>
+                            {% endif %}
+                            {% if step < 10 %}
+                            <a type="button" class="but" id="nextBtn">Next</a>
+                            {% endif %}
+                            {% if step >= 10 %}
+                            <button type="submit" class="but">Submit</a>
+                            {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                <input type="hidden" name="step" value="{{ step }}">
+                <input type="hidden" name="prev" value="0" id="key_prev">
+            </form>
+        </div>
+    </div>
+    </div>
+</body>
+{% endblock %}
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="{{url_for('static', filename='js/script.js')}}"></script>
+<script>
+    $('[name="perma_corr"]').change(function(){
+        var chort = $('[name="perma_corr"]').val();
+        if (chort){
+            
+        }
+    });
+    $("#nextBtn").click(function(){
+      $("#regForm").submit();
+   });
+   $("#prevBtn").click(function(){
+    $("#key_prev").val(1);
+      $("#regForm").submit();
+        
+
+   });
+
+</script>
+{% endblock %}
+
+</html>

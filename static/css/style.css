@@ -1,0 +1,317 @@
+
+/** Code for hover info **/
+.drop-zone {
+    max-width: 200px;
+    height: 50px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    color: #cccccc;
+    border: 1px dashed #213832;
+}
+input[type=file]{
+    display: none;
+}
+dfn {
+
+    padding: 0 0.4em;
+    cursor: help;
+    font-style: normal;
+    position: relative;
+
+}
+
+dfn::after {
+    content: attr(data-info);
+    display: inline;
+    position: absolute;
+    top: 22px;
+    left: -250px;
+    opacity: 0;
+    width: 300px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5em;
+    padding: 0.5em 0.8em;
+    background: #fff;
+    color: #000;
+    box-shadow: 0px 10px 13px 0px rgba(34, 60, 80, 0.2);
+    pointer-events: none;
+    /* This prevents the box from apearing when hovered. */
+    transition: opacity 250ms, top 250ms;
+}
+
+dfn:hover {
+    z-index: 2;
+}
+
+/* Keeps the info boxes on top of other elements */
+dfn:hover::after,
+dfn:hover::before {
+    opacity: 1;
+}
+
+dfn:hover::after {
+    top: -65px;
+}
+
+dfn:hover::before {
+    top: -15px;
+}
+
+.mobile-flex {
+    display: flex;
+}
+
+#regForm {
+    background-color: #ffffff;
+    width: 100%;
+    min-width: 300px;
+}
+
+input {
+    width: 100%;
+    display: block;
+    width: 100%;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+/* Mark input boxes that gets an error on validation: */
+input.invalid {
+    background-color: #ffdddd;
+}
+
+/* Hide all steps by default: */
+.protab {
+    display: none;
+}
+
+button, .but{
+    background-color: #213832;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+#prevBtn {
+    background-color: #bbbbbb;
+}
+
+/* Make circles that indicate the steps of the form: */
+.step {
+    max-width: 300px;
+    padding: 10px 17px;
+    border: none;
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.step.active {
+    opacity: 1;
+    background-color: #D2D46C;
+}
+
+.newStep {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 17px;
+    max-width: 300px;
+    background-color: #213832;
+    color: #fff;
+    border: none;
+    display: block;
+}
+
+.newStep1 {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 17px;
+    width: 100%;
+    max-width: 300px;
+    border: none;
+    display: block;
+}
+
+#acd {
+    margin-top: 6px;
+}
+
+#acd1 {
+    margin-top: 2px;
+}
+
+/* Mark the steps that are finished and valid: */
+.step.finish {
+    background-color: #ebee4a;
+}
+
+.box {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #213832;
+    margin-left: 30px;
+    align-content: center;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.box1 {
+    width: 100px;
+    height: 30px;
+    border: 1px solid #213832;
+    align-content: center;
+    cursor: pointer;
+    border-radius: 10px;
+    margin-left: 5px;
+}
+
+.raos {
+    position: relative;
+    left: -5px;
+}
+
+.radio-button-tabs input[type="radio"] {
+    display: none;
+}
+
+.radio-button-tabs label {
+    background-color: #fff;
+    border: 1px solid #213832;
+    color: #000;
+    display: inline-block;
+    font-family: 'Aldrich', sans-serif;
+    font-size: 15px;
+    margin: 8px;
+    padding: 4px 8px;
+    -moz-border-radius: 12px;
+    -webkit-border-radius: 12px;
+    border-radius: 12px;
+    -moz-box-shadow: #ccc 0 1px 1px;
+    -webkit-box-shadow: #ccc 0 1px 1px;
+    box-shadow: #ccc 0 1px 1px;
+}
+
+.radio-button-tabs input[type="radio"]:checked+label {
+    background-color: #213832;
+    color: #fff;
+    -webkit-box-shadow: 0px 0px 9px #213832;
+    -moz-box-shadow: 0px 0px 9px #213832;
+    -ms-box-shadow: 0px 0px 9px #213832;
+    -o-box-shadow: 0px 0px 9px #213832;
+    box-shadow: 0px 0px 9px #213832;
+}
+
+.panel {
+    padding: 0 18px;
+    background-color: white;
+    display: none;
+    overflow: hidden;
+}
+
+.sidebar-left {
+    display: table-caption;
+    width: 255px;
+    background-color: #C2C445;
+}
+
+.cont {
+    padding: 30px 15px;
+    box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.2);
+}
+
+.newTitle {
+    width: 100%;
+    background-color: #C2C445;
+    padding: 20px;
+    text-align: center;
+    margin: 0;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.button,
+select {
+    width: 100%;
+    display: block;
+    width: 100%;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.rowSector {
+    margin-bottom: 10px;
+}
+
+.form-control {
+    margin-bottom: 10px;
+}
+
+.attachment-box {
+    display: flex;
+    margin: 10px 20px 20px 0;
+    background-color: #f4f4f4;
+    border-radius: 4px 0px 4px 4px;
+    font-weight: 600;
+    padding: 15px 20px;
+    padding-bottom: 45px;
+    padding-right: 25px;
+    line-height: 24px;
+    flex-direction: column;
+    color: #666;
+    position: relative;
+    transition: 0.3s;
+    flex: 0 1 calc(50% - 21px);
+    cursor: default;
+    position: relative;
+    width: fit-content;
+}
+.attachment-box:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-width: 0 20px 20px 0;
+    border-style: solid;
+    border-color: rgba(0,0,0,0.15) #fff;
+    transition: 0.3s;
+    border-radius: 0 0 0 4px;
+}
+#footer {
+    position: fixed;
+    padding: 10px 10px 0px 10px;
+    bottom: 0;
+    width: 100%;
+    /* Height of the footer*/ 
+    height: 40px;
+    background: grey;
+}

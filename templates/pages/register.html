@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}
+Register Page
+{% endblock %}
+{% block body %}
+<h3 class="d-flex align-middle justify-content-center pt-5"> Sign up page </h3>
+<div class="container pb-5">
+    <div class="row">
+        <div class="col-6">
+            <img src="/static/media/Image-854x1024.png" alt="our_logo" style="width: -webkit-fill-available;">
+        </div>
+        <div class="col-6 px-3" style="text-align: -webkit-center;">
+            <form method="post">
+                <div class="mt-5 row">
+                    <label for="login" class="col-3 col-form-label">Login</label>
+                    <div class="col-9 pb-3">
+                        <input type="text" name='login' placeholder="login" class="form-control" required>
+                    </div>
+                    <label for="password" class="col-3 col-form-label">Password</label>
+                    <div class="col-9 pb-3">
+                        <input type="password" id="password" name='password' placeholder="password" class="form-control" required>
+                    </div>
+                    <label for="rep_password" id="confirm_password" class="col-3 col-form-label">Repeat password</label>
+                    <div class="col-9">
+                        <input type="password" name='rep_password' placeholder="repeat password" class="form-control" required>
+                    </div>
+                    <div class="col-3"></div>
+                    <div class="col-9 mt-3"><button type="submit" class='btn btn-lg btn-success'>Sign up</button></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+var password = document.getElementById("password")
+  , confirm_password = document.getElementById("confirm_password");
+
+function validatePassword(){
+  if(password.value != confirm_password.value) {
+    confirm_password.setCustomValidity("Passwords Don't Match");
+  } else {
+    confirm_password.setCustomValidity('');
+  }
+}
+
+password.onchange = validatePassword;
+confirm_password.onkeyup = validatePassword;
+</script>
+{% endblock %}
