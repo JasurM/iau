@@ -11,4 +11,4 @@ from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_migrate import Migrate
 from datetime import *
-import jwt
+from flask_mail import Mail, Message

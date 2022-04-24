@@ -1,6 +1,8 @@
 from imports import *
 from functools import wraps
 from config import SECRET_KEY
+import jwt
+import requests, json
 
 app = Flask(__name__)
 
@@ -9,7 +11,7 @@ app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager(app)
-
+mail = Mail(app)
 
 def Get_Load(user_id):
     return User.query.get(user_id)
@@ -57,6 +59,32 @@ def after_request(response):
     header.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     return response
 
+def send_mail(recipient, text_body):
+
+    reqUrl = "https://internship.agro.uz/api/send_email"
+
+    headersList = {
+    "Accept": "*/*",
+    "x-key": "333",
+    "Content-Type": "application/json" 
+    }
+
+    payload = json.dumps(
+    {
+        "subject" : "Email verify",
+        "recipients": [ recipient ],
+        "text_body" : text_body
+        
+    })
+
+    response = requests.request("POST", reqUrl, data=payload,  headers=headersList)
+
+    print(response.text)
+
+@app.route('/uploads/<path:path>')
+def send_uploads(path):
+    return send_from_directory('uploads', path, as_attachment=True)
+
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -68,6 +96,22 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String, default='student')
     admissions = db.relationship('Admission', backref='user', lazy=True)
     
+    def format(self):
+        st = ''
+        if self.admissions:
+            st = self.admissions[0].status
+        else:
+            st = 'empty'
+        return{
+            "id" : self.id,
+            "firstname" : self.firstname,
+            "lastname" : self.lastname,
+            "pin" : self.pin,
+            "email" : self.email,
+            "role" : self.role,
+            "status" : st
+        }
+
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
@@ -118,6 +162,7 @@ class Admission(db.Model):
     perma_moved_from = db.Column(db.Date, nullable=True)
     perma_moved_to = db.Column(db.Date, nullable=True)
     contact_number = db.Column(db.String, nullable=True)
+    contact_number_other = db.Column(db.String, nullable=True)
     email = db.Column(db.String, nullable=True)
     #end of step 4
     school = db.Column(db.String, nullable=True)
@@ -127,7 +172,7 @@ class Admission(db.Model):
     major_type = db.Column(db.String, nullable=True)
     start_date = db.Column(db.Date, nullable=True)
     completion_date = db.Column(db.Date, nullable=True)
-    transcript_date = db.Column(db.String, nullable=True)
+    transcript_grade = db.Column(db.String, nullable=True)
     other_qualifications = db.Column(db.Boolean, nullable=True)
     transcript_copy = db.Column(db.String, nullable=True)
     degree_cerf_copy = db.Column(db.String, nullable=True)
@@ -164,6 +209,7 @@ class Admission(db.Model):
     accepted = db.Column(db.Boolean)
     submitted = db.Column(db.Boolean)
     status = db.Column(db.String, default='filling')
+    reject_commentary = db.Column(db.String, nullable=True)
 
 
     def __repr__(self):
@@ -175,6 +221,7 @@ class Admission(db.Model):
             'title': self.title,
             'firstname': self.firstname,
             'surname': self.surname,
+            'middlename': self.middlename,
             'DoB': self.DoB,
             'gender': self.gender,
             'CoB': self.CoB,
@@ -190,7 +237,7 @@ class Admission(db.Model):
             'issue_country': self.issue_country,
             'passport_copy': self.passport_copy,
             'corr_address_1': self.corr_address_1,
-            'Ccorr_address_2B': self.corr_address_2,
+            'corr_address_2': self.corr_address_2,
             'corr_city': self.corr_city,
             'corr_county': self.corr_county,
             'corr_zip': self.corr_zip,
@@ -201,10 +248,11 @@ class Admission(db.Model):
             'perma_city': self.perma_city,
             'perma_county': self.perma_county,
             'perma_zip': self.perma_zip,
-            'perma_country': self.Cperma_countryoB,
+            'perma_country': self.perma_country,
             'perma_moved_from': self.perma_moved_from,
             'perma_moved_to': self.perma_moved_to,
             'contact_number': self.contact_number,
+            'contact_number_other': self.contact_number_other,
             'email': self.email,
             'school': self.school,
             'qualified_date': self.qualified_date,
@@ -213,7 +261,7 @@ class Admission(db.Model):
             'major_type': self.major_type,
             'start_date': self.start_date,
             'completion_date': self.completion_date,
-            'transcript_date': self.transcript_date,
+            'transcript_grade': self.transcript_grade,
             'other_qualifications': self.other_qualifications,
             'transcript_copy': self.transcript_copy,
             'degree_cerf_copy': self.degree_cerf_copy,
@@ -240,9 +288,120 @@ class Admission(db.Model):
             'second_reference': self.second_reference,
             'agree_terms': self.agree_terms,
             'accepted': self.accepted,
+            'status': self.status,
             'submitted': self.submitted
             }
-            
+
+class Title(db.Model):
+    __tablename__ = 'title'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=True)
+
+    def format(self):
+        return {
+            "value" : self.id,
+            "label" : self.name
+        }
+    
+class Gender(db.Model):
+    __tablename__ = 'gender'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=True)
+    def format(self):
+        return {
+            "value" : self.id,
+            "label" : self.name
+        }
+    
+class Country(db.Model):
+    __tablename__ = 'country'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=True)
+    def format(self):
+        return {
+            "value" : self.id,
+            "label" : self.name
+        }
+    
+class Disability(db.Model):
+    __tablename__ = 'disability'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=True)
+    def format(self):
+        return {
+            "value" : self.id,
+            "label" : self.name
+        }
+    
+class Add_Term(db.Model):
+    __tablename__ = 'add_term'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=True)
+    def format(self):
+        return {
+            "value" : self.id,
+            "label" : self.name
+        }
+    
+class App_Type(db.Model):
+    __tablename__ = 'app_type'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=True)
+    def format(self):
+        return {
+            "value" : self.id,
+            "label" : self.name
+        }
+    
+class Programme(db.Model):
+    __tablename__ = 'programme'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=True)
+    def format(self):
+        return {
+            "value" : self.id,
+            "label" : self.name
+        }
+    
+class Qualification(db.Model):
+    __tablename__ = 'qualification'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=True)
+    def format(self):
+        return {
+            "value" : self.id,
+            "label" : self.name
+        }
+    
+class Major(db.Model):
+    __tablename__ = 'major'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=True)
+    def format(self):
+        return {
+            "value" : self.id,
+            "label" : self.name
+        }
+    
+class Test(db.Model):
+    __tablename__ = 'test'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=True)
+    def format(self):
+        return {
+            "value" : self.id,
+            "label" : self.name
+        }
+    
+class Other_Test(db.Model):
+    __tablename__ = 'other_test'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=True)
+    def format(self):
+        return {
+            "value" : self.id,
+            "label" : self.name
+        }
 
 admission_cols = [column.key for column in Admission.__table__.columns]
 
@@ -259,3 +418,14 @@ admin = Admin(app, name='IAU', template_mode='bootstrap4')
 
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Admission, db.session))
+admin.add_view(ModelView(Title, db.session))
+admin.add_view(ModelView(Gender, db.session))
+admin.add_view(ModelView(Country, db.session))
+admin.add_view(ModelView(Disability, db.session))
+admin.add_view(ModelView(Add_Term, db.session))
+admin.add_view(ModelView(App_Type, db.session))
+admin.add_view(ModelView(Programme, db.session))
+admin.add_view(ModelView(Qualification, db.session))
+admin.add_view(ModelView(Major, db.session))
+admin.add_view(ModelView(Test, db.session))
+admin.add_view(ModelView(Other_Test, db.session))

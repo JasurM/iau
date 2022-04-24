@@ -1,6 +1,7 @@
 from models import *
 from flask import send_from_directory
 import random
+import jwt
 
 @app.route("/login", methods=['POST'])
 def login_a():
@@ -13,7 +14,7 @@ def login_a():
         if ch:
             token = jwt.encode({
                 'public_id': user.id,
-                'exp' : datetime.datetime.now() ++ timedelta(days = 100)
+                'exp' : datetime.now() ++ timedelta(days = 100)
             }, SECRET_KEY,algorithm="HS256")
             print(token)
             db.session.commit()
@@ -22,117 +23,23 @@ def login_a():
                 'msg': "ok"
             }), 200
         return jsonify({
-            'msg': "incorrect"
+            'msg': "Password incorrect"
         }), 401
     print('CHORT')
     return jsonify({
-        'msg': "not found"
+        'msg': "User not found"
     }), 404
 
 @app.route('/admission', methods=['GET', 'POST'])
 @app.route('/admission/step/<int:step>', methods=['GET', 'POST'])
 @token_required
-def admission(step=0):
-    user = User.query.filter_by(id=current_user.id).first()
+def admission(c, step=0):
+    user = User.query.filter_by(id=c.id).first()
     adm = Admission.query.filter_by(user_id=user.id).first()
     if not adm:
         adm = Admission()
         adm.user_id = user.id
     data = adm.format()
-    if step == 1:
-        adm.last_step = 1
-        data['title'] = adm.title
-        data['firstname'] = adm.firstname
-        data['surname'] = adm.surname
-        data['middlename'] = adm.middlename
-        data['DoB'] = adm.DoB
-        data['CoB'] = adm.CoB
-        data['nationality'] = adm.nationality
-        data['perma_residence'] = adm.perma_residence
-        data['curr_residence'] = adm.curr_residence
-        data['disability'] = adm.disability
-    elif step == 2:
-        adm.last_step = 2
-        data['term'] = adm.term
-        data['type'] = adm.type
-        data['programme'] = adm.programme
-    elif step == 3:
-        adm.last_step = 3
-        data['passport'] = adm.passport
-        data['expiry_date'] = adm.expiry_date
-        data['issue_country'] = adm.issue_country
-        data['passport_copy'] = adm.passport_copy
-    elif step == 4:
-        adm.last_step = 4
-        data['corr_address_1'] = adm.corr_address_1
-        data['corr_address_2'] = adm.corr_address_2
-        data['corr_city'] = adm.corr_city
-        data['corr_county'] = adm.corr_county
-        data['corr_zip'] = adm.corr_zip
-        data['corr_country'] = adm.corr_country
-        data['perma_corr'] = adm.perma_corr
-        if not data['perma_corr']:
-            data['perma_address_1'] = adm.perma_address_1
-            data['perma_address_2'] = adm.perma_address_2
-            data['perma_city'] = adm.perma_city
-            data['perma_county'] = adm.perma_county
-            data['perma_zip'] = adm.perma_zip
-            data['perma_country'] = adm.perma_country
-            data['perma_moved_from'] = adm.perma_moved_from
-            data['perma_moved_to'] = adm.perma_moved_to
-        data['contact_number'] = adm.contact_number
-        data['email'] = adm.email
-    elif step == 5:
-        adm.last_step = 5
-        data['school'] = adm.school
-        data['qualified_date'] = adm.qualified_date
-        if data['qualified_date'] == 'Other':
-            data['qualified_type'] = adm.qualified_type
-        data['major'] = adm.major
-        if data['major'] == 'Other':
-            data['major_type'] = adm.major_type
-        data['start_date'] = adm.start_date
-        data['completion_date'] = adm.completion_date
-        data['transcript_date'] = adm.transcript_date
-        data['other_qualifications'] = adm.other_qualifications
-        data['transcript_copy'] = adm.transcript_copy
-        data['degree_cerf_copy'] = adm.degree_cerf_copy
-    elif step == 6:
-        adm.last_step = 6
-        data['is_english_first_language'] = adm.is_english_first_language
-        data['UK_qualification_equivalent'] = adm.UK_qualification_equivalent
-        if data['UK_qualification_equivalent']:
-            data['uqe_country'] = adm.uqe_country
-        data['ELT'] = adm.ELT
-        if data['ELT']:
-            data['ELT_type'] = adm.ELT_type
-        data['ELT_date'] = adm.ELT_date
-        data['overall_score'] = adm.overall_score
-        data['listening_score'] = adm.listening_score
-        data['reading_score'] = adm.reading_score
-        data['writing_score'] = adm.writing_score
-        data['speaking_score'] = adm.speaking_score
-        data['ELT_alternative'] = adm.ELT_alternative
-        if data['ELT_alternative'] != 'No':
-            data['alternative_date'] = adm.alternative_date
-            data['alternative_grade'] = adm.alternative_grade
-        data['ELT_other'] = adm.ELT_other
-    elif step == 7:
-        adm.last_step = 7
-        data['personal_statement'] = adm.personal_statement
-        data['research_proposal'] = adm.research_proposal
-        data['pg_diploma'] = adm.pg_diploma
-    elif step == 8:
-        adm.last_step = 8
-        data['first_reference'] = adm.first_reference
-        data['second_reference'] = adm.second_reference
-    elif step == 9:
-        adm.last_step = 9
-        data['agree_terms'] = adm.agree_terms
-    elif step == 10:
-        adm.last_step = 10
-        data['admission_cols'] = [column.key for column in Admission.__table__.columns]
-        data['ads'] = current_user.admissions[0]
 
     if request.method == 'POST':
         if step == 1:
@@ -162,10 +69,10 @@ def admission(step=0):
                 expiry_date = None
             else:
                 adm.expiry_date = request.form.get("expiry_date")
-            adm.issue_date = request.form.get("issue_date")
+            adm.issue_country = request.form.get("issue_country")
             passport_file = request.files.get("passport_copy")
             if passport_file:
-                filename = Hash_User_File(secure_filename(passport_file.filename), current_user.id)
+                filename = Hash_User_File(secure_filename(passport_file.filename), c.id)
                 filepath = "uploads/files/passport/" + filename
                 passport_file.save(filepath)
                 adm.passport_copy = filepath
@@ -176,7 +83,7 @@ def admission(step=0):
             adm.corr_county = request.form.get("corr_county")
             adm.corr_zip = request.form.get("corr_zip")
             adm.corr_country = request.form.get("corr_country")
-            if request.form.get("perma_corr").lower() == 'no':
+            if request.form.get("perma_corr").lower() == 'false':
                 adm.perma_corr = False
             else:
                 adm.perma_corr = True
@@ -191,6 +98,7 @@ def admission(step=0):
             if request.form.get("perma_moved_to"):
                 adm.perma_moved_to = request.form.get("perma_moved_to")
             adm.contact_number = request.form.get("contact_number")
+            adm.contact_number_other = request.form.get("contact_number_other")
             adm.email = request.form.get("email")
         elif step == 5:
             adm.school = request.form.get("school")
@@ -202,36 +110,35 @@ def admission(step=0):
                 adm.start_date = request.form.get("start_date")
             if request.form.get("completion_date"):
                 adm.completion_date = request.form.get("completion_date")
-            if request.form.get("transcript_date"):
-                adm.transcript_date = request.form.get("transcript_date")
-            if request.form.get("other_qualifications").lower() == 'no':
+            adm.transcript_grade = request.form.get("transcript_grade")
+            if request.form.get("other_qualifications").lower() == 'false':
                 adm.other_qualifications = False
             else:
                 adm.other_qualifications = True
 
             transcript_file = request.files.get("transcript_copy")
             if transcript_file:
-                filename = Hash_User_File(secure_filename(transcript_file.filename), current_user.id)
+                filename = Hash_User_File(secure_filename(transcript_file.filename), c.id)
                 filepath = "uploads/files/transcripts/" + filename
                 transcript_file.save(filepath)
                 adm.transcript_copy = filepath
             degree_cerf_file = request.files.get("degree_cerf_copy")
             if degree_cerf_file:
-                filename = Hash_User_File(secure_filename(degree_cerf_file.filename), current_user.id)
+                filename = Hash_User_File(secure_filename(degree_cerf_file.filename), c.id)
                 filepath = "uploads/files/degree_cerfs/" + filename
                 degree_cerf_file.save(filepath)
                 adm.degree_cerf_copy = filepath
         elif step == 6:
-            if request.form.get("is_english_first_language") == 'no':
+            if request.form.get("is_english_first_language") == 'false':
                 adm.is_english_first_language = False
             else:
                 adm.is_english_first_language = True
-            if request.form.get("UK_qualification_equivalent") == 'no':
+            if request.form.get("UK_qualification_equivalent") == 'false':
                 adm.UK_qualification_equivalent = False
             else:
                 adm.UK_qualification_equivalent = True
             adm.uqe_country = request.form.get("uqe_country")
-            if request.form.get("ELT") == 'no':
+            if request.form.get("ELT") == 'false':
                 adm.ELT = False
             else:
                 adm.ELT = True
@@ -239,6 +146,7 @@ def admission(step=0):
             if request.form.get("ELT_date"):
                 adm.ELT_date = request.form.get("ELT_date")
             adm.overall_score = request.form.get("overall_score")
+            adm.listening_score = request.form.get("listening_score")
             adm.reading_score = request.form.get("reading_score")
             adm.writing_score = request.form.get("writing_score")
             adm.speaking_score = request.form.get("speaking_score")
@@ -251,79 +159,159 @@ def admission(step=0):
         elif step == 7:
             personal_statement_file = request.files.get("personal_statement")
             if personal_statement_file:
-                filename = Hash_User_File(secure_filename(personal_statement_file.filename), current_user.id)
+                filename = Hash_User_File(secure_filename(personal_statement_file.filename), c.id)
                 filepath = "uploads/files/" + filename
                 personal_statement_file.save(filepath)
                 adm.personal_statement = filepath
             research_proposal_file = request.files.get("research_proposal")
             if research_proposal_file:
-                filename = Hash_User_File(secure_filename(research_proposal_file.filename), current_user.id)
+                filename = Hash_User_File(secure_filename(research_proposal_file.filename), c.id)
                 filepath = "uploads/files/" + filename
                 research_proposal_file.save(filepath)
                 adm.research_proposal = filepath
             cv_file = request.files.get("cv")
             if cv_file:
-                filename = Hash_User_File(secure_filename(cv_file.filename), current_user.id)
+                filename = Hash_User_File(secure_filename(cv_file.filename), c.id)
                 filepath = "uploads/files/" + filename
                 cv_file.save(filepath)
                 adm.cv = filepath
             pg_diploma_file = request.files.get("pg_diploma")
             if pg_diploma_file:
-                filename = Hash_User_File(secure_filename(pg_diploma_file.filename), current_user.id)
+                filename = Hash_User_File(secure_filename(pg_diploma_file.filename), c.id)
                 filepath = "uploads/files/" + filename
                 pg_diploma_file.save(filepath)
                 adm.pg_diploma = filepath
         elif step == 8:
             first_reference_file = request.files.get("first_reference")
             if first_reference_file:
-                filename = Hash_User_File(secure_filename(first_reference_file.filename), current_user.id)
+                filename = Hash_User_File(secure_filename(first_reference_file.filename), c.id)
                 filepath = "uploads/files/" + filename
                 first_reference_file.save(filepath)
                 adm.first_reference = filepath
             second_reference_file = request.files.get("second_reference")
             if second_reference_file:
-                filename = Hash_User_File(secure_filename(second_reference_file.filename), current_user.id)
+                filename = Hash_User_File(secure_filename(second_reference_file.filename), c.id)
                 
                 filepath = "uploads/files/" + filename
                 second_reference_file.save(filepath)
                 adm.second_reference = filepath
         elif step == 9:
-            if request.form.get("agree_terms") == 'on':
+            if request.form.get("agree_terms") == 'true':
                 adm.agree_terms = True
             else:
                 adm.agree_terms = False
-            if not (adm.firstname and adm.surname and adm.DoB and adm.nationality):
-                return redirect(url_for('admission', step=1))
-            elif not (adm.passport and adm.expiry_date and adm.passport_copy):
-                return redirect(url_for('admission', step=3))
-            elif not (adm.contact_number and adm.email and adm.corr_address_1 and adm.corr_city and adm.corr_zip and ((adm.perma_corr) or (not adm.perma_corr and adm.perma_address_1 and adm.perma_city and adm.perma_zip and adm.perma_moved_from and adm.perma_moved_to))):
-                return redirect(url_for('admission', step=4))
-            elif not ((adm.school and adm.start_date and adm.completion_date and adm.transcript_date and adm.transcript_copy and adm.degree_cerf_copy) and ((adm.qualified_date == 'Other Qualification' and adm.qualified_type) or (adm.qualified_date != 'Other Qualification')) and ((adm.major == 'Other subject not listed here' and adm.major_type) or (adm.major != 'Other subject not listed here'))):
-                return redirect(url_for('admission', step=5))
-            elif not ((adm.ELT_date and adm.alternative_date and adm.alternative_grade)):
-                return redirect(url_for('admission', step=6))
-            elif not ((adm.personal_statement and adm.research_proposal)):
-                return redirect(url_for('admission', step=7))
-            elif not ((adm.first_reference and adm.second_reference)):
-                return redirect(url_for('admission', step=8))
         elif step == 10:
             adm.submitted = True
             adm.status = 'pending'
             
         db.session.add(adm)
         db.session.commit()
-        print(request.form.get('step'))
-        if int(request.form.get('step')) == 10 and int(request.form.get('prev')) == 0:
-            flash("Your admission submitted", "success")
-            return redirect(url_for("index"))
-        if int(request.form.get('prev')) == 0:
-            return redirect(url_for('admission', step=int(request.form.get('step')) + 1))
-        else:
-            return redirect(url_for('admission', step=int(request.form.get('step')) - 1))
-    return render_template('pages/admission.html', step=step, data=data)
+    if request.method == 'GET':
+        return jsonify(data)
+    else:
+        return jsonify({'msg': 'ok'})
+
+@app.route('/title', methods=['GET'])
+@token_required
+def title(c):
+    data = []
+    titles = Title.query.all()
+    for t in titles:
+        data.append(t.format())
+    return jsonify(data)
+
+@app.route('/gender', methods=['GET'])
+@token_required
+def gender(c):
+    data = []
+    genders = Gender.query.all()
+    for t in genders:
+        data.append(t.format())
+    return jsonify(data)
+
+@app.route('/country', methods=['GET'])
+@token_required
+def country(c):
+    data = []
+    countries = Country.query.all()
+    for t in countries:
+        data.append(t.format())
+    return jsonify(data)
+
+@app.route('/disability', methods=['GET'])
+@token_required
+def disability(c):
+    data = []
+    disabilities = Disability.query.all()
+    for t in disabilities:
+        data.append(t.format())
+    return jsonify(data)
+
+@app.route('/add_term', methods=['GET'])
+@token_required
+def add_term(c):
+    data = []
+    add_terms = Add_Term.query.all()
+    for t in add_terms:
+        data.append(t.format())
+    return jsonify(data)
+
+@app.route('/app_type', methods=['GET'])
+@token_required
+def app_type(c):
+    data = []
+    app_types = App_Type.query.all()
+    for t in app_types:
+        data.append(t.format())
+    return jsonify(data)
+
+@app.route('/programme', methods=['GET'])
+@token_required
+def programme(c):
+    data = []
+    programmes = Programme.query.all()
+    for t in programmes:
+        data.append(t.format())
+    return jsonify(data)
+
+@app.route('/qualification', methods=['GET'])
+@token_required
+def qualification(c):
+    data = []
+    qualifications = Qualification.query.all()
+    for t in qualifications:
+        data.append(t.format())
+    return jsonify(data)
+
+@app.route('/major', methods=['GET'])
+@token_required
+def major(c):
+    data = []
+    majors = Major.query.all()
+    for t in majors:
+        data.append(t.format())
+    return jsonify(data)
+
+@app.route('/test', methods=['GET'])
+@token_required
+def test(c):
+    data = []
+    tests = Test.query.all()
+    for t in tests:
+        data.append(t.format())
+    return jsonify(data)
+
+@app.route('/other_test', methods=['GET'])
+@token_required
+def other_test(c):
+    data = []
+    other_tests = Other_Test.query.all()
+    for t in other_tests:
+        data.append(t.format())
+    return jsonify(data)
 
 @app.route('/logout')
-@login_required
+@token_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
@@ -332,16 +320,14 @@ def logout():
 def index():
     return render_template('pages/index.html')
 
-
-
-@app.route('/uploads/<path:path>')
-def send_from_pth(path):
-    print(f'path is {path}')
-    if path.startswith("uploads"):
-        real_p = path.replace("\\", '/')
-        real_p = real_p.split("/")[1:]
-        real_p = '/'.join(real_p)
-    return send_from_directory('uploads', real_p)
+# @app.route('/uploads/<path:path>')
+# def send_from_pth(path):
+#     print(f'path is {path}')
+#     if path.startswith("uploads"):
+#         real_p = path.replace("\\", '/')
+#         real_p = real_p.split("/")[1:]
+#         real_p = '/'.join(real_p)
+#     return send_from_directory('uploads', real_p)
 
 @app.route("/registration",methods = ['POST'])
 def registration():
@@ -366,7 +352,7 @@ def registration():
             t_us = User(
                 firstname = first_name,
                 lastname = last_name,
-                email = email_,
+                email = email_
             )
             t_us.set_password(password)
             while True:
@@ -375,6 +361,8 @@ def registration():
                     pin_code = pin_code + str(random.randint(0, 9))
                 if not User.query.filter_by(pin=pin_code).first():
                     t_us.pin = pin_code
+                    text_body = 'Registration completed succesfully. Your PIN is: ' + pin_code
+                    send_mail(t_us.email, text_body)
                     break
             db.session.add(t_us)
             db.session.commit()
@@ -382,46 +370,65 @@ def registration():
     else:
         return jsonify({"message":"Method not allowed"}),405
 
-@app.route("/single_admission/<int:id>")
-@login_required
-def single_admission(id):
-    if current_user.role != 'admin':
-        return redirect(url_for("index"))
+@app.route("/single_admission", methods=["GET"])
+@token_required
+def single_admission(c):
+    id = request.args.get('id')
     u = User.query.get_or_404(id)
     data = {}
-    data['admission_cols'] = [column.key for column in Admission.__table__.columns]
-    try:
-        data['ads'] = u.admissions[0]
-    except:
-        flash("This user does not have admission yet", 'danger')
-        return redirect(url_for("index"))
-    return render_template("pages/single_admission.html", data=data)
+    if u.admissions:
+        data['ads'] = u.admissions[0].format()
+    else:
+        data['ads'] = 'empty'
+    return jsonify(data)
 
-@app.route("/all_admissions")
-def all_admissions():
+@app.route("/all_admissions", methods=["GET"])
+@token_required
+def all_admissions(c):
     data = {}
-    data['all'] = User.query.all()
+    data['all'] = [x.format() for x in User.query.all()]
     data["user_cols"] = [column.key for column in User.__table__.columns]
     
-    return render_template('pages/all_admissions.html', data=data)
+    return jsonify(data)
 
 @app.route("/accept_admission", methods=["POST"])
-@login_required
-def accept_admission():
+@token_required
+def accept_admission(c):
     ad_id = request.form.get("admission_id")
     adm = Admission.query.get(ad_id)
     adm.accepted = True
     adm.status = 'accepted'
     db.session.commit()
-    return redirect(url_for("all_admissions"))
+    return jsonify({"msg": "accepted"})
 
 
 @app.route("/reject_admission", methods=["POST"])
-@login_required
-def reject_admission():
+@token_required
+def reject_admission(c):
     ad_id = request.form.get("admission_id")
     adm = Admission.query.get(ad_id)
     adm.accepted = False
     adm.status = 'rejected'
+    adm.reject_commentary = request.form.get("comment")
     db.session.commit()
-    return redirect(url_for("all_admissions"))
+    return jsonify({"msg": "rejected"})
+
+@app.route("/review_admission", methods=["GET"])
+@token_required
+def review_admission(c):
+    adm = Admission.query.filter_by(user_id=c.id).first()
+    st = ''
+    cc = ''
+    if adm:
+        print("CHORT")
+        st = adm.status
+        cc = adm.reject_commentary
+    else:
+        print("CHORTMAS")
+        st = 'empty'
+        cc = ''
+    data = {
+        "stst" : st,
+        "comment" : cc
+    }
+    return jsonify(data)
